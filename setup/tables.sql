@@ -1,0 +1,32 @@
+CREATE TABLE customers (
+    customer_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    customer_name VARCHAR2(100) NOT NULL,
+    customer_email VARCHAR2(100)NOT NULL UNIQUE
+);
+
+CREATE TABLE menu_items (
+    item_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    item_name VARCHAR2(100) NOT NULL UNIQUE,
+    item_price NUMBER(6,2) NOT NULL CHECK (price > 0)
+);
+
+CREATE TABLE orders (
+    order_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    customer_id NUMBER NOT NULL,
+    order_date DATE DEFAULT SYSDATE NOT NULL,
+    order_total_amount NUMBER(8,2) NOT NULL CHECK (total_amount >= 0),
+    CONSTRAINT fk_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id)
+);
+
+CREATE TABLE order_items (
+    order_item_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    order_id NUMBER NOT NULL,
+    item_id NUMBER NOT NULL,
+    quantity NUMBER NOT NULL CHECK (quantity > 0),
+    order_total NUMBER(8,2) NOT NULL,
+    CONSTRAINT fk_order FOREIGN KEY (order_id)
+        REFERENCES orders(order_id),
+    CONSTRAINT fk_item FOREIGN KEY (item_id)
+        REFERENCES menu_items(item_id)
+);
