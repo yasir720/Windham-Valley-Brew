@@ -21,5 +21,8 @@ CREATE OR REPLACE PACKAGE cafe_pkg AS
 
     -- Function to return the most profitable item at the café
     FUNCTION get_most_profitable_items RETURN SYS_REFCURSOR;
+
+    -- Function to return the favorite item for each customer
+    FUNCTION get_customer_favorite_items RETURN SYS_REFCURSOR;
 END cafe_pkg;
 /
