@@ -1,0 +1,9 @@
+BEGIN
+    cafe_pkg.create_order(1);
+    cafe_pkg.create_order(2);
+    cafe_pkg.create_order(3);
+    cafe_pkg.create_order(4);
+    cafe_pkg.create_order(1);
+    cafe_pkg.create_order(2);
+END;
+/
