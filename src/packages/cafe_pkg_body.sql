@@ -27,19 +27,19 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
         
 
         -- Add all menu items with random quantity (1 to 5)
-        FOR item IN (SELECT item_id, price FROM menu_items) LOOP
+        FOR item IN (SELECT item_id, item_price FROM menu_items) LOOP
             -- Randomly determine how many of each item to add to the order (1 to 5)
             v_item_qty := TRUNC(DBMS_RANDOM.VALUE(1, 6));
-            INSERT INTO order_items
+            INSERT INTO order_items (order_item_id, order_id, item_id, quantity, line_total)
             VALUES (
                 order_item_seq.NEXTVAL,
                 v_order_id,
                 item.item_id,
                 v_item_qty,
-                item.price
+                v_item_qty * item.item_price
             );
 
-            v_total := v_total + (v_item_qty * item.price);
+            v_total := v_total + (v_item_qty * item.item_price);
         END LOOP;
 
         UPDATE orders
@@ -135,7 +135,7 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
                 SELECT
                     m.item_id,
                     m.item_name,
-                    SUM(oi.quantity * oi.order_total) AS total_revenue
+                    SUM(oi.line_total) AS total_revenue
                 FROM menu_items m
                 JOIN order_items oi
                     ON m.item_id = oi.item_id
@@ -154,7 +154,7 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
                 item_name,
                 total_revenue
             FROM ranked_items
-            WHERE rnk = 1;
+            WHERE ranked_item_revenue = 1;
 
         RETURN v_cursor;
     END;
