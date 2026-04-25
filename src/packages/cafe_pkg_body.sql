@@ -1,18 +1,21 @@
 CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
 
     PROCEDURE create_order(p_customer_id NUMBER) IS
-        v_count NUMBER;
+        v_dummy NUMBER;
         v_order_id NUMBER;
         v_total NUMBER := 0;
         v_item_qty NUMBER;
     BEGIN
-       SELECT COUNT(*) INTO v_count
-        FROM customers
-        WHERE customer_id = p_customer_id;
+        BEGIN
+            SELECT 1
+            INTO v_dummy
+            FROM customers
+            WHERE customer_id = p_customer_id;
 
-        IF v_count = 0 THEN
-            RAISE_APPLICATION_ERROR(-20001, 'Invalid customer');
-        END IF;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                RAISE_APPLICATION_ERROR(-20001, 'Invalid customer');
+        END;
 
         -- Create new order using sequence for order_id
         v_order_id := order_seq.NEXTVAL;
@@ -44,6 +47,26 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
 
         DBMS_OUTPUT.PUT_LINE('Order created: ' || v_order_id);
 
+    END;
+
+    PROCEDURE add_menu_item (p_item_name  IN VARCHAR2, p_item_price IN NUMBER) IS
+    BEGIN
+        INSERT INTO menu_items (
+            item_name,
+            item_price
+        )
+        VALUES (
+            p_item_name,
+            p_item_price
+        );
+
+        DBMS_OUTPUT.PUT_LINE('Menu item added: ' || p_item_name);
+
+    EXCEPTION
+        WHEN DUP_VAL_ON_INDEX THEN
+            RAISE_APPLICATION_ERROR(-20002, 'Item already exists');
+        WHEN OTHERS THEN
+            RAISE;
     END;
 
 END cafe_pkg;
