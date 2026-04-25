@@ -1,5 +1,6 @@
 CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
-
+    -- Procedures
+    -- Procedure to create a new order for a customer
     PROCEDURE create_order(p_customer_id NUMBER) IS
         v_dummy NUMBER;
         v_order_id NUMBER;
@@ -49,6 +50,7 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
 
     END;
 
+    -- Procedure to add item to a menu
     PROCEDURE add_menu_item (p_item_name  IN VARCHAR2, p_item_price IN NUMBER) IS
     BEGIN
         INSERT INTO menu_items (
@@ -69,7 +71,8 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
             RAISE;
     END;
 
-
+    -- Functions
+    -- Function to get total spend for specific customer
     FUNCTION get_customer_total(p_customer_id NUMBER)
     RETURN NUMBER IS
         v_customer_total NUMBER;
@@ -80,6 +83,25 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
         WHERE customer_id = p_customer_id;
 
         RETURN v_customer_total;
+    END;
+
+    -- Function to return the top 3 spenders at the cafe
+    FUNCTION get_top_spenders
+    RETURN SYS_REFCURSOR IS -- Return multiple rows using a ref cursor
+        v_cursor SYS_REFCURSOR;
+    BEGIN
+        OPEN v_cursor FOR
+            SELECT c.customer_id,
+                c.customer_name,
+                SUM(o.order_total_amount) AS total_spent
+            FROM customers c
+            JOIN orders o
+                ON c.customer_id = o.customer_id
+            GROUP BY c.customer_id, c.customer_name
+            ORDER BY total_spent DESC
+            FETCH FIRST 3 ROWS ONLY;
+
+        RETURN v_cursor;
     END;
 
 END cafe_pkg;
