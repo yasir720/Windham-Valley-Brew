@@ -125,5 +125,39 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
         RETURN v_cursor;
     END;
 
+    -- Function to return the most profitable item at the cafe
+    FUNCTION get_most_profitable_items
+    RETURN SYS_REFCURSOR IS
+        v_cursor SYS_REFCURSOR;
+    BEGIN
+        OPEN v_cursor FOR
+            WITH item_revenue AS (
+                SELECT
+                    m.item_id,
+                    m.item_name,
+                    SUM(oi.quantity * oi.order_total) AS total_revenue
+                FROM menu_items m
+                JOIN order_items oi
+                    ON m.item_id = oi.item_id
+                GROUP BY m.item_id, m.item_name
+            ),
+            ranked_items AS (
+                SELECT
+                    item_id,
+                    item_name,
+                    total_revenue,
+                    RANK() OVER (ORDER BY total_revenue DESC) AS ranked_item_revenue
+                FROM item_revenue
+            )
+            SELECT
+                item_id,
+                item_name,
+                total_revenue
+            FROM ranked_items
+            WHERE rnk = 1;
+
+        RETURN v_cursor;
+    END;
+
 END cafe_pkg;
 /
