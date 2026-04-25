@@ -91,7 +91,8 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
         v_cursor SYS_REFCURSOR;
     BEGIN
         OPEN v_cursor FOR
-            SELECT c.customer_id,
+            SELECT 
+                c.customer_id,
                 c.customer_name,
                 SUM(o.order_total_amount) AS total_spent
             FROM customers c
@@ -99,6 +100,26 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
                 ON c.customer_id = o.customer_id
             GROUP BY c.customer_id, c.customer_name
             ORDER BY total_spent DESC
+            FETCH FIRST 3 ROWS ONLY;
+
+        RETURN v_cursor;
+    END;
+
+    -- Function to return the 3 most popular items at the cafe
+    FUNCTION get_trending_items
+    RETURN SYS_REFCURSOR IS
+        v_cursor SYS_REFCURSOR;
+    BEGIN
+        OPEN v_cursor FOR
+            SELECT
+                m.item_id,
+                m.item_name,
+                SUM(oi.quantity) AS total_sold
+            FROM menu_items m
+            JOIN order_items oi
+                ON m.item_id = oi.item_id
+            GROUP BY m.item_id, m.item_name
+            ORDER BY total_sold DESC
             FETCH FIRST 3 ROWS ONLY;
 
         RETURN v_cursor;
