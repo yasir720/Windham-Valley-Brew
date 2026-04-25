@@ -1,5 +1,5 @@
 CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
-    -- Procedures
+    -- Procedures:
     -- Procedure to create a new order for a customer
     PROCEDURE create_order(p_customer_id NUMBER) IS
         v_dummy NUMBER;
@@ -71,7 +71,7 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
             RAISE;
     END;
 
-    -- Functions
+    -- Functions:
     -- Function to get total spend for specific customer
     FUNCTION get_customer_total(p_customer_id NUMBER)
     RETURN NUMBER IS
