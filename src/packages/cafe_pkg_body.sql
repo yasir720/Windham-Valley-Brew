@@ -91,7 +91,7 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
         v_cursor SYS_REFCURSOR;
     BEGIN
         OPEN v_cursor FOR
-            SELECT 
+            SELECT
                 c.customer_id,
                 c.customer_name,
                 SUM(o.order_total_amount) AS total_spent
@@ -155,6 +155,48 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
                 total_revenue
             FROM ranked_items
             WHERE ranked_item_revenue = 1;
+
+        RETURN v_cursor;
+    END;
+
+    -- Function to return the favorite item for each customer
+    FUNCTION get_customer_favorite_items
+    RETURN SYS_REFCURSOR IS
+        v_cursor SYS_REFCURSOR;
+    BEGIN
+        OPEN v_cursor FOR
+            WITH item_counts AS (
+                SELECT
+                    o.customer_id,
+                    oi.item_id,
+                    m.item_name,
+                    SUM(oi.quantity) AS total_quantity
+                FROM orders o
+                JOIN order_items oi
+                    ON o.order_id = oi.order_id
+                JOIN menu_items m
+                    ON oi.item_id = m.item_id
+                GROUP BY o.customer_id, oi.item_id, m.item_name
+            ),
+            ranked_items AS (
+                SELECT
+                    customer_id,
+                    item_id,
+                    item_name,
+                    total_quantity,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY customer_id
+                        ORDER BY total_quantity DESC
+                    ) AS rnk
+                FROM item_counts
+            )
+            SELECT
+                customer_id,
+                item_id,
+                item_name,
+                total_quantity
+            FROM ranked_items
+            WHERE rnk = 1;
 
         RETURN v_cursor;
     END;
