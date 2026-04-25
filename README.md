@@ -1,6 +1,6 @@
 # Windham Valley Brew
 
-Windham Valley Brew is a PL/SQL-based cafe order management system. It demonstrates the use of packages, procedures, functions, and cursors to handle order processing, menu management, and customer reporting in an Oracle database environment.
+Windham Valley Brew is a PL/SQL-based café order management system. It demonstrates the use of packages, procedures, functions, and cursors to handle order processing, menu management, and customer reporting in an Oracle database environment.
 
 ## Features
 - Customer, menu, order, and order item management

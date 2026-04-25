@@ -1,5 +1,5 @@
 CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
-    -- Procedures
+    -- Procedures:
     -- Procedure to create a new order for a customer
     PROCEDURE create_order(p_customer_id NUMBER) IS
         v_dummy NUMBER;
@@ -71,7 +71,7 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
             RAISE;
     END;
 
-    -- Functions
+    -- Functions:
     -- Function to get total spend for specific customer
     FUNCTION get_customer_total(p_customer_id NUMBER)
     RETURN NUMBER IS
@@ -85,7 +85,7 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
         RETURN v_customer_total;
     END;
 
-    -- Function to return the top 3 spenders at the cafe
+    -- Function to return the top 3 spenders at the café
     FUNCTION get_top_spenders
     RETURN SYS_REFCURSOR IS -- Return multiple rows using a ref cursor
         v_cursor SYS_REFCURSOR;
@@ -105,7 +105,7 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
         RETURN v_cursor;
     END;
 
-    -- Function to return the 3 most popular items at the cafe
+    -- Function to return the 3 most popular items at the café
     FUNCTION get_trending_items
     RETURN SYS_REFCURSOR IS
         v_cursor SYS_REFCURSOR;
@@ -125,7 +125,7 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
         RETURN v_cursor;
     END;
 
-    -- Function to return the most profitable item at the cafe
+    -- Function to return the most profitable item at the café
     FUNCTION get_most_profitable_items
     RETURN SYS_REFCURSOR IS
         v_cursor SYS_REFCURSOR;
