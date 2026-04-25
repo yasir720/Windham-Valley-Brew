@@ -1,7 +1,15 @@
 CREATE OR REPLACE PACKAGE cafe_pkg AS
+    -- Procedures
     -- Standard order creation procedure
     PROCEDURE create_order(p_customer_id NUMBER);
 
+    -- Procedure to add item to a menu
+    PROCEDURE add_menu_item (
+        p_item_name IN VARCHAR2,
+        p_item_price IN NUMBER
+    );
+
+    -- Functions
     -- Function to get total spend for one specific customer
     FUNCTION get_customer_total(p_customer_id NUMBER) RETURN NUMBER;
 
