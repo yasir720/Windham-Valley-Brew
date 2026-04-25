@@ -20,7 +20,7 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
         -- Create new order using sequence for order_id
         v_order_id := order_seq.NEXTVAL;
 
-        INSERT INTO orders (order_id, customer_id, order_date, total_amount)
+        INSERT INTO orders (order_id, customer_id, order_date, order_total_amount)
         VALUES (v_order_id, p_customer_id, SYSDATE, 0);
 
         
@@ -42,7 +42,7 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
         END LOOP;
 
         UPDATE orders
-        SET total_amount = v_total
+        SET order_total_amount = v_total
         WHERE order_id = v_order_id;
 
         DBMS_OUTPUT.PUT_LINE('Order created: ' || v_order_id);
@@ -67,6 +67,19 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
             RAISE_APPLICATION_ERROR(-20002, 'Item already exists');
         WHEN OTHERS THEN
             RAISE;
+    END;
+
+
+    FUNCTION get_customer_total(p_customer_id NUMBER)
+    RETURN NUMBER IS
+        v_customer_total NUMBER;
+    BEGIN
+        SELECT NVL(SUM(order_total_amount), 0) -- Use NVL to return 0 if the customer has no orders
+        INTO v_customer_total
+        FROM orders
+        WHERE customer_id = p_customer_id;
+
+        RETURN v_customer_total;
     END;
 
 END cafe_pkg;
