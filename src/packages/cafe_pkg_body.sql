@@ -65,10 +65,12 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
     PROCEDURE add_menu_item (p_item_name  IN VARCHAR2, p_item_price IN NUMBER) IS
     BEGIN
         INSERT INTO menu_items (
+            item_id,
             item_name,
             item_price
         )
         VALUES (
+            menu_item_seq.NEXTVAL,
             p_item_name,
             p_item_price
         );
