@@ -83,6 +83,8 @@ END;
 ## Prerequisites
 - Oracle Database 19c or newer
 - SQL and PL/SQL
+- Oracle SQL Developer
+
 
 
 ## License
