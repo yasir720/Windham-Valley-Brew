@@ -30,3 +30,7 @@ CREATE TABLE order_items (
     CONSTRAINT fk_item FOREIGN KEY (item_id)
         REFERENCES menu_items(item_id)
 );
+
+CREATE INDEX idx_orders_customer_id ON orders (customer_id);
+CREATE INDEX idx_order_items_order_id ON order_items (order_id);
+CREATE INDEX idx_order_items_item_id ON order_items (item_id);
