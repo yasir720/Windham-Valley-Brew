@@ -16,5 +16,12 @@ BEGIN
     END LOOP;
 
     CLOSE v_cursor;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        IF v_cursor%ISOPEN THEN
+            CLOSE v_cursor;
+        END IF;
+        RAISE;
 END;
 /
