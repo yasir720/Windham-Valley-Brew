@@ -11,6 +11,10 @@ Windham Valley Brew is a PL/SQL-based café order management system. It demonstr
 - Find the most profitable menu item
 - Print customer spending reports
 
+## 🎬 Demo
+
+<video src="https://github.com/user-attachments/assets/a40b7fed-3ff2-4076-90fa-baad6216c465" width="600" height="400" controls></video>
+
 ## Technologies
 - Oracle SQL / PL-SQL (tested on Oracle 19c+)
 
