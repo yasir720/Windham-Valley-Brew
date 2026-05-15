@@ -1,5 +1,5 @@
 CREATE OR REPLACE PACKAGE cafe_pkg AS
-    -- Procedures
+    -- Procedures:
     -- Standard order creation procedure
     PROCEDURE create_order(p_customer_id NUMBER);
 
@@ -9,7 +9,7 @@ CREATE OR REPLACE PACKAGE cafe_pkg AS
         p_item_price IN NUMBER
     );
 
-    -- Functions
+    -- Functions:
     -- Function to get total spend for one specific customer
     FUNCTION get_customer_total(p_customer_id NUMBER) RETURN NUMBER;
 
@@ -24,5 +24,6 @@ CREATE OR REPLACE PACKAGE cafe_pkg AS
 
     -- Function to return the favorite item for each customer
     FUNCTION get_customer_favorite_items RETURN SYS_REFCURSOR;
+
 END cafe_pkg;
 /

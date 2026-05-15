@@ -13,13 +13,16 @@ Windham Valley Brew is a PL/SQL-based café order management system. It demonstr
 - **Menu Analytics**:
   - Identify trending (most popular) menu items
   - Find the most profitable menu item
-- **Reporting**: Print comprehensive customer spending reports
+- **Reporting**: Print comprehensive customer spending reports, including audit review
+- **Audit Logging**: Track order inserts/updates/deletes, menu item additions, and runtime errors with an audit log table and triggers
 - **Exception Handling**: Robust error handling with custom application errors and validation
 - **Transaction Management**: Atomic operations with savepoints, commits, and rollbacks for data integrity
 
 ## 🎬 Demo
 
 <video src="https://github.com/user-attachments/assets/a40b7fed-3ff2-4076-90fa-baad6216c465" width="600" height="400" controls></video>
+
+> Note: the demo video does not reflect the latest audit logging and trigger behavior added to this project.
 
 ## Technologies
 - Oracle SQL / PL-SQL (tested on Oracle 19c+)
@@ -33,10 +36,15 @@ setup/
     sample_data.sql    # Sample data inserts
 src/
     packages/
-        cafe_pkg_spec.sql   # Package specification
-        cafe_pkg_body.sql   # Package body (logic)
+        cafe_pkg_spec.sql   # Cafe package specification
+        cafe_pkg_body.sql   # Cafe package body (logic)
+        audit_pkg_spec.sql  # Audit package specification
+        audit_pkg_body.sql  # Audit package body (logic)
     procedures/
         print_customer_report.sql # Standalone reporting procedure
+        print_audit_report.sql    # Audit log review report
+    triggers/
+        audit_triggers.sql       # Audit triggers for orders and menu items
 test/
     *.sql              # Demo scripts for testing features
 ```
@@ -48,15 +56,19 @@ test/
          1. `tables.sql`
          2. `sequences.sql`
          3. `sample_data.sql`
-
-2. **Compile PL/SQL code:**
-     - Compile the package:
+     - Note: the provided sample data loads menu item IDs 1–6. The `menu_item_seq` is configured to start at 7 to prevent duplicate key errors when adding new items.
+2. **Enable audit triggers:**
+     - Run `src/triggers/audit_triggers.sql`.
+3. **Compile PL/SQL code:**
+     - Compile the packages in this order:
+         - `src/packages/audit_pkg_spec.sql`
+         - `src/packages/audit_pkg_body.sql`
          - `src/packages/cafe_pkg_spec.sql`
          - `src/packages/cafe_pkg_body.sql`
-     - Compile the reporting procedure:
+     - Compile the reporting procedures:
          - `src/procedures/print_customer_report.sql`
-
-3. **Run demo/test scripts:**
+         - `src/procedures/print_audit_report.sql`
+4. **Run demo/test scripts:**
      - Execute any `.sql` file in the `test/` folder to see features in action.
 
 ## Usage Examples
@@ -163,6 +175,14 @@ END;
 ```sql
 BEGIN
     print_customer_report;
+END;
+/ 
+```
+
+### Print Audit Log Report
+```sql
+BEGIN
+    print_audit_report;
 END;
 / 
 ```
