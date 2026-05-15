@@ -49,6 +49,17 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
         SET order_total_amount = v_total
         WHERE order_id = v_order_id;
 
+        audit_pkg.log_audit_entry(
+            'AUDIT',
+            'ORDER',
+            v_order_id,
+            'INSERT',
+            'Created order for customer ' || p_customer_id || ' with total ' || v_total,
+            NULL,
+            NULL,
+            'CREATE_ORDER'
+        );
+
         -- Commit transaction if all inserts succeed
         COMMIT;
 
@@ -58,29 +69,69 @@ CREATE OR REPLACE PACKAGE BODY cafe_pkg AS
         -- Rollback to savepoint on any error
         WHEN OTHERS THEN
             ROLLBACK TO order_start;
+            audit_pkg.log_error_entry(
+                'ORDER',
+                NULL,
+                'INSERT',
+                'Failed to create order for customer ' || p_customer_id,
+                SQLCODE,
+                SQLERRM,
+                'CREATE_ORDER'
+            );
             RAISE_APPLICATION_ERROR(-20003, 'Failed to create order: ' || SQLERRM);
     END;
 
     -- Procedure to add item to a menu
-    PROCEDURE add_menu_item (p_item_name  IN VARCHAR2, p_item_price IN NUMBER) IS
+    PROCEDURE add_menu_item (p_item_name IN VARCHAR2, p_item_price IN NUMBER) IS
+        v_item_id NUMBER;
     BEGIN
+        v_item_id := menu_item_seq.NEXTVAL;
+
         INSERT INTO menu_items (
             item_id,
             item_name,
             item_price
         )
         VALUES (
-            menu_item_seq.NEXTVAL,
+            v_item_id,
             p_item_name,
             p_item_price
         );
 
         DBMS_OUTPUT.PUT_LINE('Menu item added: ' || p_item_name);
+        audit_pkg.log_audit_entry(
+            'AUDIT',
+            'MENU_ITEM',
+            v_item_id,
+            'INSERT',
+            'Menu item added: ' || p_item_name || ' at price ' || p_item_price,
+            NULL,
+            NULL,
+            'ADD_MENU_ITEM'
+        );
 
     EXCEPTION
         WHEN DUP_VAL_ON_INDEX THEN
+            audit_pkg.log_error_entry(
+                'MENU_ITEM',
+                NULL,
+                'INSERT',
+                'Duplicate menu item: ' || p_item_name,
+                SQLCODE,
+                SQLERRM,
+                'ADD_MENU_ITEM'
+            );
             RAISE_APPLICATION_ERROR(-20002, 'Item already exists');
         WHEN OTHERS THEN
+            audit_pkg.log_error_entry(
+                'MENU_ITEM',
+                NULL,
+                'INSERT',
+                'Failed to add menu item: ' || p_item_name,
+                SQLCODE,
+                SQLERRM,
+                'ADD_MENU_ITEM'
+            );
             RAISE;
     END;
 
